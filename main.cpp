@@ -1,12 +1,11 @@
 #include "Employee.h"
 #include "DataBase.h"
 #include <fstream>
-#include <vector>
 
 int main()
 {
     int numOfEmp;
-    Employee *emp = NULL, anotherEmp;
+    Employee *emp = NULL;
     string line;
 
     // Open file
@@ -49,11 +48,13 @@ int main()
     //     cin >> emp[i];
     // }
 
-    createDatabase("Employee.db");
-    insertData(emp, numOfEmp, "Employee.db");
-    anotherEmp = selectData("Employee.db");
-    updateData("Employee.db", "SALARY", "AGE");
-    deleteData("Employee.db", "ID", "2");
+    emp->createDatabase("Employee.db");
+    emp->insertIntoDatabase("Employee.db");
+    emp->selectFromDatabase("Employee.db");
+    emp->updateData("Employee.db", "SALARY", "22.0", "AGE", "19");
+    emp->deleteData("Employee.db", "ID", "2");
+
+    delete [] emp;
 
     return 0;
 }

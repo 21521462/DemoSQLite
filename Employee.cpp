@@ -79,6 +79,155 @@ int Employee::getCount() const
 {
     return Count;
 }
+string Employee::createOpenStatement()
+{
+    string sql = "CREATE TABLE COMPANY(" \
+                 "ID INT PRIMARY KEY    NOT NULL," \
+                 "NAME           TEXT   NOT NULL," \
+                 "AGE            INT    NOT NULL," \
+                 "ADDRESS        CHAR(50)," \
+                 "SALARY         REAL);";
+
+    return sql;
+}
+string Employee::createInsertStatement()
+{
+    string sql = "INSERT INTO COMPANY (ID, NAME, AGE, ADDRESS, SALARY)" \
+                 "VALUES (" + to_string(Id) + ", '" + Name + "', " + to_string(Age)
+                 + ", '" + Address + "', " + to_string(Salary) + ");";
+
+    return sql;
+}
+string Employee::createSelectStatement()
+{
+    string sql = "SELECT * from COMPANY";
+
+    return sql;
+}
+string Employee::createUpdateStatement(string field1, string data1, string field2, string data2)
+{
+    string sql = "UPDATE COMPANY set " + field1 + " = " + data1 + " where " + field2 + " = " + data2 + ";"
+                 "SELECT * from COMPANY";
+
+    return sql;
+}
+string Employee::createDeleteStatement(string field, string data)
+{
+    string sql = "DELETE from COMPANY where " + field + " = " + data + ";"
+                 "SELECT * from COMPANY";
+
+    return sql;
+}
+void Employee::executeOpenStatement(string sql)
+{
+    RC = sqlite3_exec(Database, sql.c_str(), callback, 0, &zErrMsg);
+
+    if (RC != SQLITE_OK)
+    {
+        cout << "SQL error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        cout << "Table created successfully" << endl;
+    }
+}
+void Employee::executeInsertStatement(string sql)
+{
+    RC = sqlite3_exec(Database, sql.c_str(), callback, 0, &zErrMsg);
+
+    if (RC != SQLITE_OK)
+    {
+        cout << "SQL error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        cout << "Records created successfully" << endl;
+    }
+}
+void Employee::executeSelectStatement(string sql)
+{
+    RC = sqlite3_exec(Database, sql.c_str(), callback, (void*)Data.c_str(), &zErrMsg);
+
+    if (RC != SQLITE_OK)
+    {
+        cout << "SQL error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        cout << "Operation done successfully" << endl;
+    }
+}
+void Employee::executeUpdateStatement(string sql)
+{
+    RC = sqlite3_exec(Database, sql.c_str(), callback, (void*)Data.c_str(), &zErrMsg);
+
+    if (RC != SQLITE_OK)
+    {
+        cout << "SQL error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        cout << "Database updated successfully" << endl;
+    }
+}
+void Employee::executeDeleteStatement(string sql)
+{
+    RC = sqlite3_exec(Database, sql.c_str(), callback, (void *)Data.c_str(), &zErrMsg);
+
+    if (RC != SQLITE_OK)
+    {
+        cout << "SQL error: " << zErrMsg << endl;
+        sqlite3_free(zErrMsg);
+    }
+    else
+    {
+        cout << "Data deleted successfully" << endl;
+    }
+}
+void Employee::createDatabase(const char *filename)
+{
+    openDatabase(filename);
+    string sql = createOpenStatement();
+    executeOpenStatement(sql);
+    sqlite3_close(Database);
+}
+void Employee::insertIntoDatabase(const char *filename)
+{
+    int numOfEmp = Count;
+    openDatabase(filename);
+
+    for (int i = 0; i < numOfEmp; i++)
+    {
+        string sql = this[i].createInsertStatement();
+        executeInsertStatement(sql);
+    }
+    sqlite3_close(Database);
+}
+void Employee::selectFromDatabase(const char *filename)
+{
+    openDatabase(filename);
+    string sql = createSelectStatement();
+    executeSelectStatement(sql);
+    sqlite3_close(Database);
+}
+void Employee::updateData(const char *filename, string field1, string data1, string field2, string data2)
+{
+    openDatabase(filename);
+    string sql = createUpdateStatement(field1, data1, field2, data2);
+    executeUpdateStatement(sql);
+    sqlite3_close(Database);
+}
+void Employee::deleteData(const char *filename, string field, string data)
+{
+    openDatabase(filename);
+    string sql = createDeleteStatement(field, data);
+    executeDeleteStatement(sql);
+    sqlite3_close(Database);
+}
 istream &operator>>(istream &is, Employee &emp)
 {
     cout << "Enter ID: "; is >> emp.Id; is.ignore();
